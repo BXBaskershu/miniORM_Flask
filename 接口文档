@@ -1,0 +1,219 @@
+[TOC]
+# 数据库设计
+
+## Salesman销售人员
+
+```
+id  int
+username 用户名 varchar 20
+password 密码  varchar   128
+job_code 工号  varchar   30
+name 名字   varchar  20
+is_incumbency 是否在职 (1:在职，0:不在职)  smallint
+created_time
+```
+
+
+## Customer客户
+
+```
+id  int
+name 客户名  varchar  50
+telephone 电话   varchar  20
+salesman_id 客户归属  外键关联salesman.id
+detail 客户描述  varchar 200
+created_time  --onupdate
+```
+
+
+## CustomerRecord客户跟进
+
+```
+id   int
+customer_id 客户id  外键关联customer
+salesman_id  跟进销售   外键关联salesman
+content  跟进记录   varchar  200
+created_time
+```
+
+# 接口
+errmsg写的不全
+
+## 1 添加销售账号
+
+
+- POST
+- url：/register
+- json
+
+参数 | 是否必须
+---|---
+username | 是
+job_code | 是
+password | 是
+name | 是
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data=salesman.to_dict()
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 添加账号失败
+
+
+
+## 2 销售登陆
+
+- POST
+- url:    /login
+- json参数
+
+参数 | 是否必须
+---|---
+username | 是
+password | 是
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data={'id': salesman.id}
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 登陆失败
+
+##  3 验证销售登陆
+
+- GET
+- url:    /login
+
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data={'username': username}
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 销售人员未登录
+
+
+## 4 客户信息录入
+
+- POST
+- url:    /customer
+- json参数
+
+参数 | 是否必须
+---|---
+name | 是
+telephone | 是
+detail | 是
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data=customer.to_dict()
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 1/客户已存在；2/录入客户信息失败
+
+## 5 获取客户信息
+- GET
+- url：/customer/<int:customer_id>
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data=customer.to_dict()
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 1/获取客户信息异常；2/无效操作
+
+## 6 修改客户信息
+
+- POST
+- url:    /customer/<int:customer_id>
+- json参数
+
+参数 | 是否必须
+---|---
+name | 是
+telephone | 是
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg:ok<br>
+data=customer.to_dict()
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 修改客户信息失败
+
+
+## 7 跟进客户小记
+
+- POST
+- url:    /customer_record/<int:customer_id>
+- json参数
+
+参数 | 是否必须
+---|---
+customer_record_data | 是
+
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg: ok<br>
+data=customer_record.to_dict()
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 追加客户跟进信息失败
+
+
+## 8 展示所有客户列表
+
+- GET
+- url:	/customers
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg: ok<br>
+data:{'customers': %s, 'total_page': %s, 'current_page': %s}
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 获取客户详情失败
+
+
+## 9 展示详情客户信息
+
+- GET
+- url:	/customer/<int:customer_id>
+- 返回json格式
+1. 成功<br>
+errno : 0<br>
+errmsg: ok<br>
+data:{"customer_id":%s,"customer":%s}}
+1. 失败<br>
+errno : “状态码”<br>
+errmsg: 获取客户详情失败
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
