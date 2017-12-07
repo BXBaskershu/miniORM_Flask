@@ -52,6 +52,7 @@ class Customer(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     detail = db.Column(db.String(200), nullable=False)
     created_time = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    records = db.relationship('CustomerRecord', backref='Customer')
 
     def to_dict(self):
         """将对象转换为字典数据"""
@@ -60,6 +61,7 @@ class Customer(db.Model):
             "telephone": self.telephone,
             "salesman_id": self.salesman_id,
             "detail": self.detail,
+            "records": self.records
         }
         return customer_dict
 
@@ -82,6 +84,7 @@ class CustomerRecord(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     content = db.Column(db.String(200), nullable=False)  # 跟进记录
     created_time = db.Column(db.DateTime, default=datetime.now)
+    customer = db.relationship('Customer', backref='CustomerRecord')
 
     def to_dict(self):
         """将对象转换为字典数据"""

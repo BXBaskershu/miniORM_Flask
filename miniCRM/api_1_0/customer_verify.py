@@ -59,7 +59,7 @@ def customer_info(customer_id):
     if customer is None:
         return jsonify(errno=RET.NODATA, errmsg='无效操作')
 
-    return jsonify(errno=RET.OK, errmsg='OK', data=customer.to_dict())
+    return jsonify(errno=RET.OK, errmsg='OK', data=customer.to_basic_dict())
 
 
 @api.route('/customer/<int:customer_id>', methods=['PUT'])
@@ -79,7 +79,7 @@ def customer_update(customer_id):
         return jsonify(errno=RET.PARAMERR, errmsg='参数缺失')
 
     try:
-        Customer.query.filter_by(id=customer_id).update({'name': name, 'telephone': telephone})
+        Customer.query.filter_by(id=str(customer_id)).update({'name': name, 'telephone': telephone})
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='修改客户信息失败')
