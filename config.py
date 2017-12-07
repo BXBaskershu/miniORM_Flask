@@ -1,11 +1,12 @@
-import redis
+import logging
+from logging.handlers import RotatingFileHandler
 
 
 class Config:
     """基本配置参数"""
     SECRET_KEY = "TQ6uZxn+SLqiLgVimX838/VplIsLbEP5jV7vvZ+Ohqw="
 
-    # 数据库配置
+    # mysql配置
     SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/mini_crm_flask"  # 数据库
     SQLALCHEMY_TRACK_MODIFICATIONS = True  # 追踪数据库的修改行为，如果不设置会报警告，不影响代码的执行
 
@@ -16,8 +17,14 @@ class Config:
     # flask-session
     SESSION_TYPE = "redis"
     SESSION_USE_SIGNER = True
-    SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
     PERMANENT_SESSION_LIFETIME = 86400
+
+    # 日志配置
+    logging.basicConfig(level=logging.DEBUG)
+    file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
+    formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
+    file_log_handler.setFormatter(formatter)
+    logging.getLogger().addHandler(file_log_handler)
 
 
 class DevelopmentConfig(Config):
