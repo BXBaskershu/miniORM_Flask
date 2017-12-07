@@ -2,6 +2,7 @@ migrations
 .DS_Store
 .idea/
 logs
+venv
 
 # test
 coverage
