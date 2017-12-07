@@ -44,6 +44,7 @@ def check_login():
 
 @api.route('/register', methods=['POST'])
 def register():
+
     salesman_data = request.get_json()
 
     if not salesman_data:
@@ -81,6 +82,3 @@ def register():
     session['username'] = username
 
     return jsonify(errno=RET.OK, errmsg='OK', data=salesman.to_dict())
-
-
-
