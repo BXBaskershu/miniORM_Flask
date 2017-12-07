@@ -2,3 +2,32 @@ INFO _internal.py:87  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 INFO _internal.py:87  * Restarting with stat
 WARNING _internal.py:87  * Debugger is active!
 INFO _internal.py:87  * Debugger PIN: 163-403-585
+INFO _internal.py:87  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO _internal.py:87  * Restarting with stat
+WARNING _internal.py:87  * Debugger is active!
+INFO _internal.py:87  * Debugger PIN: 163-403-585
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 22:03:15] "POST /customer?name=haha&telephone=13675656565&detail=%E8%AF%A6%E7%BB%86%E6%8F%8F%E8%BF%B0xxxxxxxx HTTP/1.1" 500 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 22:04:47] "POST /customer HTTP/1.1" 500 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:30:36] "GET /customer/5 HTTP/1.1" 500 -
+INFO _internal.py:87  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO _internal.py:87  * Restarting with stat
+WARNING _internal.py:87  * Debugger is active!
+INFO _internal.py:87  * Debugger PIN: 163-403-585
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:37:49] "GET /customer/5 HTTP/1.1" 500 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:38:11] "GET /customer/5 HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:40:00] "GET /customer/5 HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:40:04] "GET /customer/5 HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:40:09] "GET /customer/1 HTTP/1.1" 404 -
+INFO _internal.py:87  * Detected change in '/Users/ban/PycharmProjects/miniCRM_Flask/miniCRM/api_1_0/customer_show.py', reloading
+INFO _internal.py:87  * Restarting with stat
+WARNING _internal.py:87  * Debugger is active!
+INFO _internal.py:87  * Debugger PIN: 163-403-585
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:47:44] "GET /customer/1 HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:47:53] "GET /customer/1 HTTP/1.1" 404 -
+INFO _internal.py:87  * Detected change in '/Users/ban/PycharmProjects/miniCRM_Flask/miniCRM/api_1_0/customer_show.py', reloading
+INFO _internal.py:87  * Restarting with stat
+WARNING _internal.py:87  * Debugger is active!
+INFO _internal.py:87  * Debugger PIN: 163-403-585
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:49:29] "GET /customers HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:51:27] "GET /customers1111 HTTP/1.1" 404 -
+INFO _internal.py:87 127.0.0.1 - - [06/Dec/2017 23:51:32] "GET /customers1111 HTTP/1.1" 404 -
