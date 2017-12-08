@@ -32,16 +32,6 @@ def login():
     return jsonify(errno=RET.OK, errmsg='OK', data={'id': salesman.id})
 
 
-# 验证登陆状态
-@api.route('/login', methods=['GET'])
-def check_login():
-    username = session.get('username')
-    if username is not None:
-        return jsonify(errno=RET.OK, errmsg='ok', data={'username': username})
-    else:
-        return jsonify(errno=RET.SESSIONERR, errmsg='销售人员未登录')
-
-
 @api.route('/register', methods=['POST'])
 def register():
 

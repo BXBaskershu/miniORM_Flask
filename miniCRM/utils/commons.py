@@ -2,6 +2,7 @@ import functools
 from flask import g, session, jsonify
 from werkzeug.routing import BaseConverter
 from .response_code import RET
+from flask import request, jsonify, current_app
 
 
 class RegexConverter(BaseConverter):
@@ -24,3 +25,10 @@ def login_required(func):
     return wrapper
 
 
+def page_str_to_int():
+    page_str = request.args.get('p', '1')
+    try:
+        return int(page_str)
+    except Exception as e:
+        current_app.logger.error(e)
+        return

@@ -61,7 +61,7 @@ class Customer(db.Model):
             "telephone": self.telephone,
             "salesman_id": self.salesman_id,
             "detail": self.detail,
-            "records": self.records
+
         }
         return customer_dict
 

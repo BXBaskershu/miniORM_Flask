@@ -7,7 +7,7 @@ from miniCRM import db
 
 
 @api.route('/customer', methods=['POST'])
-@login_required
+# @login_required
 def customer_add():
     """客户录入"""
 
@@ -46,24 +46,8 @@ def customer_add():
     return jsonify(errno=RET.OK, errmsg='OK', data=customer.to_dict())
 
 
-@api.route('/customer/<int:customer_id>', methods=['GET'])
-@login_required
-def customer_info(customer_id):
-    """获取客户信息"""
-    try:
-        customer = Customer.query.get(customer_id)
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR, errmsg='获取客户信息异常')
-
-    if customer is None:
-        return jsonify(errno=RET.NODATA, errmsg='无效操作')
-
-    return jsonify(errno=RET.OK, errmsg='OK', data=customer.to_basic_dict())
-
-
 @api.route('/customer/<int:customer_id>', methods=['PUT'])
-@login_required
+# @login_required
 def customer_update(customer_id):
     """修改客户信息"""
 
@@ -88,7 +72,7 @@ def customer_update(customer_id):
 
 
 @api.route('/customer_record/<int:customer_id>', methods=['POST'])
-@login_required
+# @login_required
 def customer_record_add(customer_id):
     """跟进客户小记"""
 
