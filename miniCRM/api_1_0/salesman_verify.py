@@ -29,7 +29,7 @@ def login():
     session['id'] = salesman.id
     session['username'] = username
 
-    return jsonify(errno=RET.OK, errmsg='OK', data={'id': salesman.id})
+    return jsonify(data={'id': salesman.id})
 
 
 @api.route('/register', methods=['POST'])
@@ -71,4 +71,4 @@ def register():
     session['id'] = salesman.id
     session['username'] = username
 
-    return jsonify(errno=RET.OK, errmsg='OK', data=salesman.to_dict())
+    return jsonify(data=salesman.to_dict())

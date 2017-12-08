@@ -7,7 +7,7 @@ from miniCRM import db
 
 
 @api.route('/customer', methods=['POST'])
-# @login_required
+@login_required
 def customer_add():
     """客户录入"""
 
@@ -43,11 +43,11 @@ def customer_add():
         db.session.rollback()
         return jsonify(errno=RET.DBERR, errmsg='录入客户信息异常')
 
-    return jsonify(errno=RET.OK, errmsg='OK', data=customer.to_dict())
+    return jsonify(data=customer.to_dict())
 
 
 @api.route('/customer/<int:customer_id>', methods=['PUT'])
-# @login_required
+@login_required
 def customer_update(customer_id):
     """修改客户信息"""
 
@@ -68,11 +68,11 @@ def customer_update(customer_id):
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='修改客户信息失败')
 
-    return jsonify(errno=RET.OK, errmsg='OK', data={'name': name, 'telephone': telephone})
+    return jsonify(data={'name': name, 'telephone': telephone})
 
 
 @api.route('/customer_record/<int:customer_id>', methods=['POST'])
-# @login_required
+@login_required
 def customer_record_add(customer_id):
     """跟进客户小记"""
 
@@ -97,4 +97,4 @@ def customer_record_add(customer_id):
         db.session.rollback()
         return jsonify(errno=RET.DBERR, errmsg='客户跟进记录异常')
 
-    return jsonify(errno=RET.OK, errmsg='OK', data=customer_record.to_dict())
+    return jsonify(data=customer_record.to_dict())

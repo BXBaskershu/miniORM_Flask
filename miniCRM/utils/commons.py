@@ -31,4 +31,4 @@ def page_str_to_int():
         return int(page_str)
     except Exception as e:
         current_app.logger.error(e)
-        return
+        return 0

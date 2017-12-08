@@ -8,7 +8,7 @@ from miniCRM import redis_store, constants
 
 
 @api.route('/customer/<int:customer_id>', methods=['GET'])
-# @login_required
+@login_required
 def customer_info(customer_id):
     """获取客户信息"""
 
@@ -77,11 +77,11 @@ def customer_info(customer_id):
 
     data = {'data': {'customers': customer_data, 'customer_records_list': customer_records_dict_list,
                      'total_page': total_page, 'current_page': page}}
-    return str(data)
+    return jsonify(data)
 
 
 @api.route('/customers/<int:salesman_id>', methods=['GET'])
-# @login_required
+@login_required
 def get_customer_list(salesman_id):
     """获取客户列表"""
 
@@ -112,4 +112,4 @@ def get_customer_list(salesman_id):
         return jsonify(errno=RET.DBERR, errmsg='查询客户列表信息异常')
 
     data = {'data': {'customers': customer_dict_list, 'total_page': total_page, 'current_page': page}}
-    return str(data)
+    return jsonify(data)
