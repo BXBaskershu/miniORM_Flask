@@ -1,8 +1,8 @@
 import functools
 from flask import g, session, jsonify
 from werkzeug.routing import BaseConverter
-from .response_code import RET
 from flask import request, jsonify, current_app
+from miniCRM.libs.response import Response
 
 
 class RegexConverter(BaseConverter):
@@ -18,7 +18,7 @@ def login_required(func):
     def wrapper(*args, **kwargs):
         salesman_id = session.get("salesman_id")
         if salesman_id is None:
-            return jsonify(errno=RET.SESSIONERR, errmsg="销售人员未登录")
+            return Response.not_login()
         else:
             g.salesman_id = salesman_id
             return func(*args, **kwargs)
@@ -31,4 +31,15 @@ def page_str_to_int():
         return int(page_str)
     except Exception as e:
         current_app.logger.error(e)
-        return 0
+        return False
+
+
+# 分页
+def paging(data_obj, page, page_capacity):
+    data_page = data_obj.paginate(page, page_capacity, False)
+    data_list = data_page.items
+    total_page = data_page.pages
+    return data_page, data_list, total_page
+
+
+

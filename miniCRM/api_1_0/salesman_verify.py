@@ -1,8 +1,9 @@
 from . import api
 from flask import request, jsonify, current_app, session
-from miniCRM.utils.response_code import RET
+from miniCRM.utils.db_utils import commit
 from miniCRM.models import Salesman
 from miniCRM import db
+from miniCRM.libs.response import Response
 
 
 @api.route('/login', methods=['POST'])
@@ -11,64 +12,65 @@ def login():
     salesman_data = request.get_json()
 
     if not salesman_data:
-        return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
+        return Response.params_error()
 
     username = salesman_data.get('username')
     password = salesman_data.get('password')
 
-    if not all([username, password]):
-        return jsonify(errno=RET.PARAMERR, errmsg='参数缺失')
-    try:
-        salesman = Salesman.query.filter_by(username=username).first()
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR, errmsg='获取用户信息异常')
+    if not username:
+        return Response.params_lose('username')
+
+    if not password:
+        return Response.params_lose('password')
+
+    salesman = Salesman.query.filter_by(username=username).first()
+
     if salesman is None or not salesman.check_password(password):
-        return jsonify(errno=RET.DATAERR, errmsg='用户名或密码错误')
+        return Response.login_error()
 
     session['id'] = salesman.id
     session['username'] = username
 
-    return jsonify(data={'id': salesman.id})
+    return Response.success()
 
 
 @api.route('/register', methods=['POST'])
+@commit
 def register():
 
     salesman_data = request.get_json()
 
     if not salesman_data:
-        return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
+        return Response.params_error()
 
     username = salesman_data.get('username')
     password = salesman_data.get('password')
     name = salesman_data.get('name')
     job_code = salesman_data.get('job_code')
 
-    if not all([username, password, name, job_code]):
-        return jsonify(errno=RET.PARAMERR, errmsg='参数缺失')
+    if not username:
+        return Response.params_lose('username')
 
-    try:
-        salesman = Salesman.query.filter_by(username=username).first()
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR, errmsg='查询数据异常')
-    else:
-        if salesman:
-            return jsonify(errno=RET.DATAEXIST, errmsg='用户名已存在')
+    if not password:
+        return Response.params_lose('password')
+
+    if not name:
+        return Response.params_lose('name')
+
+    if not job_code:
+        return Response.params_lose('job_code')
+
+    salesman = Salesman.query.filter_by(username=username).first()
+
+    if salesman:
+        return Response.username_exist()
 
     salesman = Salesman(username=username, name=name, job_code=job_code)
-    salesman.password = password
+    salesman.set_password = password
 
-    try:
-        db.session.add(salesman)
-        db.session.commit()
-    except Exception as e:
-        current_app.logger.error(e)
-        db.session.rollback()
-        return jsonify(errno=RET.DBERR, errmsg='保存用户信息异常')
+    db.session.add(salesman)
 
     session['id'] = salesman.id
     session['username'] = username
 
-    return jsonify(data=salesman.to_dict())
+    return Response.success()

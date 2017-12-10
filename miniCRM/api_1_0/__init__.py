@@ -11,3 +11,5 @@ def after_request(response):
     if response.headers.get("Content-Type").startswith("text"):
         response.headers["Content-Type"] = "application/json"
     return response
+
+

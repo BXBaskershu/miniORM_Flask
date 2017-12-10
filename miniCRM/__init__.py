@@ -11,7 +11,7 @@ db = SQLAlchemy()
 SESSION_REDIS = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
-csrf = CSRFProtect()
+# csrf = CSRFProtect()
 
 
 # 创建应用程序实例
@@ -19,7 +19,7 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     app.url_map.converters["regex"] = RegexConverter
-    csrf.init_app(app)
+    # csrf.init_app(app)
 
     Session(app)
 

@@ -16,19 +16,18 @@ class Salesman(db.Model):
     is_incumbency = db.Column(db.SMALLINT, default=1)  # 是否在职, 默认1在职， 0不在职
     created_time = db.Column(db.DateTime, default=datetime.now)
 
-    # 通过装饰器property，把password方法提升为属性
     @property
-    def password(self):
+    def set_password(self):
         raise AttributeError("不可读")
 
-    @password.setter
-    def password(self, passwd):
+    @set_password.setter
+    def set_password(self, passwd):
         """密码加密"""
         self.password = generate_password_hash(passwd)
 
     def check_password(self, passwd):
         """检查密码"""
-        return check_password_hash(self.password_hash, passwd)
+        return check_password_hash(self.password, passwd)
 
     def to_dict(self):
         """将对象转换为字典数据"""
@@ -52,7 +51,7 @@ class Customer(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     detail = db.Column(db.String(200), nullable=False)
     created_time = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    records = db.relationship('CustomerRecord', backref='Customer')
+    records = db.relationship('CustomerRecord')
 
     def to_dict(self):
         """将对象转换为字典数据"""
@@ -84,8 +83,9 @@ class CustomerRecord(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     content = db.Column(db.String(200), nullable=False)  # 跟进记录
     created_time = db.Column(db.DateTime, default=datetime.now)
-    customer = db.relationship('Customer', backref='CustomerRecord')
+    customer = db.relationship('Customer')
 
+    @property
     def to_dict(self):
         """将对象转换为字典数据"""
         customer_record_dict = {
