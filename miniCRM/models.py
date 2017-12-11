@@ -1,9 +1,25 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from miniCRM.exception import DBCommitException, SQLAlchemyError
+from flask import current_app
 
 
-class Salesman(db.Model):
+class BaseFunc(object):
+    @classmethod
+    def add(cls, data_obj):
+        db.session.add(data_obj)
+        return session_commit()
+
+    def update(self):
+        return session_commit()
+
+    @classmethod
+    def get_from_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+
+
+class Salesman(db.Model, BaseFunc):
     """销售人员"""
 
     __tablename__ = "salesmen"
@@ -15,7 +31,7 @@ class Salesman(db.Model):
     job_code = db.Column(db.String(30), index=True)  # 工号
     is_incumbency = db.Column(db.SMALLINT, default=1)  # 是否在职, 默认1在职， 0不在职
     created_time = db.Column(db.DateTime, default=datetime.now)
-    login_time = db.Column(db.SMALLINT())
+    login_time = db.Column(db.Integer)
 
 
     @property
@@ -41,8 +57,20 @@ class Salesman(db.Model):
         }
         return salesman_dict
 
+    @classmethod
+    def get_from_username(cls, username):
+        return cls.query.filter_by(username=username).first()
 
-class Customer(db.Model):
+    @classmethod
+    def get_all(cls):
+        return cls.query.order_by(cls.created_time.desc())
+
+    @classmethod
+    def get_one_all(cls, salesman_id):
+        return cls.query.filter_by(salesman_id=salesman_id).order_by(cls.created_time.desc())
+
+
+class Customer(db.Model, BaseFunc):
     """客户"""
 
     __tablename__ = "customers"
@@ -53,7 +81,6 @@ class Customer(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     detail = db.Column(db.String(200), nullable=False)
     created_time = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    records = db.relationship('CustomerRecord')
 
     def to_dict(self):
         """将对象转换为字典数据"""
@@ -74,8 +101,16 @@ class Customer(db.Model):
         }
         return customer_dict
 
+    @classmethod
+    def get_from_telephone(cls, telephone):
+        return cls.query.filter_by(telephone=telephone).first()
 
-class CustomerRecord(db.Model):
+    @classmethod
+    def customer_all(cls):
+        return cls.query.order_by(cls.created_time.desc())
+
+
+class CustomerRecord(db.Model, BaseFunc):
     """客户跟进记录"""
 
     __tablename__ = "customer_records"
@@ -85,7 +120,6 @@ class CustomerRecord(db.Model):
     salesman_id = db.Column(db.Integer, db.ForeignKey('salesmen.id'), index=True, nullable=False)
     content = db.Column(db.String(200), nullable=False)  # 跟进记录
     created_time = db.Column(db.DateTime, default=datetime.now)
-    customer = db.relationship('Customer')
 
     @property
     def to_dict(self):
@@ -96,3 +130,16 @@ class CustomerRecord(db.Model):
             "created_time": self.created_time.strftime("%Y-%m-%d %H:%M:%S")
         }
         return customer_record_dict
+
+    @classmethod
+    def records_all(cls, customer_id):
+        return cls.query.filter_by(customer_id=customer_id).order_by(cls.created_time.desc())
+
+
+def session_commit():
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        current_app.logger.error(e)
+        raise SQLAlchemyError
