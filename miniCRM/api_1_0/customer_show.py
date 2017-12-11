@@ -2,13 +2,12 @@ import json
 from . import api
 from flask import request, current_app
 from miniCRM.models import Customer, CustomerRecord
-from miniCRM.utils.commons import page_str_to_int, paging, login_required
+from miniCRM.utils.commons import page_str_to_int, paging, save_customer_to_redis
 from miniCRM import redis_store, constants
 from miniCRM.libs.response import Response
 
 
 @api.route('/customer/<int:customer_id>', methods=['GET'])
-@login_required
 def customer_info(customer_id):
     """获取客户信息"""
 
@@ -29,16 +28,14 @@ def customer_info(customer_id):
         return Response.success_with_data('data', ret.decode())
 
     # mysql中查询
-    customer = Customer.query.get(customer_id)
+    customer = Customer.get_from_id(customer_id)
     if customer is None:
         return Response.customer_not_exist()
 
     customer_data = customer.to_basic_dict()
 
     # 序列化数据,转成json格式,存入缓存中
-    json_customer = json.dumps(customer_data)
-
-    redis_store.setex('customer_info_%s' % customer_id, constants.CUSTOMER_DETAIL_REDIS_EXPIRE_SECOND, json_customer)
+    save_customer_to_redis(customer_id, customer_data)
 
     if is_basic == "true":
         return Response.success_with_data('data', customer.to_basic_dict())
@@ -46,7 +43,7 @@ def customer_info(customer_id):
     customer_data = customer.to_dict()
 
     # 追加客户小记分页
-    customer_records = CustomerRecord.query.filter_by(customer_id=customer_id).order_by(CustomerRecord.created_time.desc())
+    customer_records = CustomerRecord.records_all(customer_id)
 
     customer_records_page, customer_records_list, total_page = paging(
         customer_records, page, constants.CUSTOMER_LIST_PAGE_CAPACITY)
@@ -59,7 +56,6 @@ def customer_info(customer_id):
 
 
 @api.route('/customers/<int:salesman_id>', methods=['GET'])
-@login_required
 def get_customer_list(salesman_id):
     """获取客户列表"""
 
@@ -69,10 +65,10 @@ def get_customer_list(salesman_id):
 
     # 所有客户
     if salesman_id == 0:
-        customers = Customer.query.order_by(Customer.created_time.desc())
+        customers = Customer.get_all()
     # 根据销售id查询对应客户
     else:
-        customers = Customer.query.filter_by(salesman_id=salesman_id).order_by(Customer.created_time.desc())
+        customers = Customer.qget_one_all(salesman_id)
 
     customers_page, customer_list, total_page = paging(
         customers, page, constants.CUSTOMER_LIST_PAGE_CAPACITY)

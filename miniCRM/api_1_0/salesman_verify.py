@@ -1,9 +1,8 @@
 from . import api
 from flask import request, jsonify, current_app, session
-from miniCRM.utils.db_utils import commit
 from miniCRM.models import Salesman
-from miniCRM import db
 from miniCRM.libs.response import Response
+from miniCRM.auth import Auth
 
 
 @api.route('/login', methods=['POST'])
@@ -23,19 +22,14 @@ def login():
     if not password:
         return Response.params_lose('password')
 
-    salesman = Salesman.query.filter_by(username=username).first()
-
-    if salesman is None or not salesman.check_password(password):
+    token = Auth.authenticate(Auth, username, password)
+    if token:
+        return Response.success_with_data("data", token.decode())
+    else:
         return Response.login_error()
-
-    session['id'] = salesman.id
-    session['username'] = username
-
-    return Response.success()
 
 
 @api.route('/register', methods=['POST'])
-@commit
 def register():
 
     salesman_data = request.get_json()
@@ -60,7 +54,7 @@ def register():
     if not job_code:
         return Response.params_lose('job_code')
 
-    salesman = Salesman.query.filter_by(username=username).first()
+    salesman = Salesman.get_from_username(username)
 
     if salesman:
         return Response.username_exist()
@@ -68,9 +62,6 @@ def register():
     salesman = Salesman(username=username, name=name, job_code=job_code)
     salesman.set_password = password
 
-    db.session.add(salesman)
-
-    session['id'] = salesman.id
-    session['username'] = username
+    Salesman.add(salesman)
 
     return Response.success()

@@ -12,7 +12,7 @@ class Response(object):
     @staticmethod
     def error(error_code,  errmsg, desc=''):
         content = {
-            'status': 1,
+            'status': 000,
             'error_code': error_code,
             'msg': errmsg,
             'desc': desc
@@ -22,7 +22,7 @@ class Response(object):
     @staticmethod
     def success(desc=''):
         content = {
-            'status': 000,
+            'status': 100,
             'msg': 'success',
             'desc': desc
         }
@@ -31,7 +31,7 @@ class Response(object):
     @staticmethod
     def success_with_data(return_key, return_val, desc=''):
         content = {
-            'status': 1,
+            'status': 101,
             'msg': 'success',
             'desc': desc,
             return_key: return_val
@@ -74,3 +74,10 @@ class Response(object):
     def customer_not_exist():
         return Response.error(ErrorCode.customer_not_exist, ErrorMessage.customer_not_exist)
 
+    @staticmethod
+    def request_header_error():
+        return Response.error(ErrorCode.request_header_error, ErrorMessage.request_header_error)
+
+    @staticmethod
+    def false_return():
+        return Response.error(ErrorCode.false_return, ErrorMessage.false_return)
