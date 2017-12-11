@@ -1,10 +1,11 @@
 import redis
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import CSRFProtect
+# from flask_wtf import CSRFProtect
 from flask_session import Session
 from config import config, Config
 from miniCRM.utils.commons import RegexConverter
+
 
 
 db = SQLAlchemy()

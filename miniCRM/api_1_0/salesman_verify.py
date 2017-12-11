@@ -4,6 +4,7 @@ from miniCRM.utils.db_utils import commit
 from miniCRM.models import Salesman
 from miniCRM import db
 from miniCRM.libs.response import Response
+from miniCRM.auth import authentucate, salesman_by_username
 
 
 @api.route('/login', methods=['POST'])
@@ -23,15 +24,10 @@ def login():
     if not password:
         return Response.params_lose('password')
 
-    salesman = Salesman.query.filter_by(username=username).first()
-
-    if salesman is None or not salesman.check_password(password):
+    if authentucate(username, password):
+        return Response.success()
+    else:
         return Response.login_error()
-
-    session['id'] = salesman.id
-    session['username'] = username
-
-    return Response.success()
 
 
 @api.route('/register', methods=['POST'])
@@ -60,7 +56,7 @@ def register():
     if not job_code:
         return Response.params_lose('job_code')
 
-    salesman = Salesman.query.filter_by(username=username).first()
+    salesman = salesman_by_username(username)
 
     if salesman:
         return Response.username_exist()

@@ -8,7 +8,7 @@ from miniCRM.libs.response import Response
 
 
 @api.route('/customer/<int:customer_id>', methods=['GET'])
-@login_required
+# @login_required
 def customer_info(customer_id):
     """获取客户信息"""
 
@@ -59,7 +59,7 @@ def customer_info(customer_id):
 
 
 @api.route('/customers/<int:salesman_id>', methods=['GET'])
-@login_required
+# @login_required
 def get_customer_list(salesman_id):
     """获取客户列表"""
 

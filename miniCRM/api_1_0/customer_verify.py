@@ -8,10 +8,10 @@ from miniCRM.libs.response import Response
 
 
 @api.route('/customer', methods=['POST'])
-@login_required
 @commit
 def customer_add():
     """客户录入"""
+
     customer_data = request.get_json()
     if not customer_data:
         return Response.params_error()
@@ -19,7 +19,8 @@ def customer_add():
     name = customer_data.get('name')
     telephone = customer_data.get('telephone')
     detail = customer_data.get('detail')
-    salesman_id = g.salesman_id
+    # salesman_id = g.salesman_id
+    salesman_id = 1
 
     if not name:
         return Response.params_lose('name')
@@ -39,7 +40,6 @@ def customer_add():
 
 
 @api.route('/customer/<int:customer_id>', methods=['PUT'])
-@login_required
 @commit
 def customer_update(customer_id):
     """修改客户信息"""

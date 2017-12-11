@@ -8,15 +8,19 @@ class ErrorCode(object):
     customer_exist = '3002'
     customer_not_exist = '3003'
     page_error = '4001'
+    request_header_error = '5001'
+    false_return = '5002'
 
 
 class ErrorMessage(object):
     permission_denied = '无访问权限'
-    not_login = '销售未登陆'
-    login_error = '登陆失败'
+    not_login = '未登陆，请先登陆'
+    login_error = '用户名或密码错误'
     params_error = '参数错误'
     params_lose = '参数缺失'
     username_exist = '用户名已存在'
     customer_exist = '客户已存在'
     customer_not_exist = '客户不存在'
     page_error = '页数错误'
+    request_header_error = 'JWT验证头错误'
+    false_return = 'token有误，请重新获取'

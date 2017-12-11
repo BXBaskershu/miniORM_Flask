@@ -15,6 +15,8 @@ class Salesman(db.Model):
     job_code = db.Column(db.String(30), index=True)  # 工号
     is_incumbency = db.Column(db.SMALLINT, default=1)  # 是否在职, 默认1在职， 0不在职
     created_time = db.Column(db.DateTime, default=datetime.now)
+    login_time = db.Column(db.SMALLINT())
+
 
     @property
     def set_password(self):
