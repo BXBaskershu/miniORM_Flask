@@ -4,6 +4,8 @@ from miniCRM.utils.commons import page_str_to_int, paging
 from flask import request, current_app
 from miniCRM import redis_store, constants
 import json
+import time
+from miniCRM.auth import Auth
 
 
 def get_request_data():
@@ -32,6 +34,14 @@ def get_customer_from_id(customer_id):
 
 def get_salesman_from_id(salesman_id):
     salesman = Salesman.get_from_id(salesman_id)
+    if salesman is None:
+        raise ValueError(ErrorCode.customer_not_exist, ErrorMessage.customer_not_exist)
+    else:
+        return salesman
+
+
+def get_salesman_from_username(username):
+    salesman = Salesman.get_from_username(username)
     if salesman is None:
         raise ValueError(ErrorCode.customer_not_exist, ErrorMessage.customer_not_exist)
     else:
@@ -166,6 +176,63 @@ def customer_record_save(customer_id):
 
         customer_record = CustomerRecord(content=content, customer_id=customer_id, salesman_id=salesman_id)
         CustomerRecord.add(customer_record)
+        return True
+    except Exception as e:
+        current_app.logger.info(e)
+        raise e
+
+
+def check_token(username, password, *args):
+    try:
+        salesman = get_salesman_from_username(username)
+
+        if salesman.check_password(password):
+            login_time = int(time.time())
+            salesman.login_time = login_time
+            salesman.update()
+            token = Auth.encode_auth_token(Auth, salesman.id, login_time)
+        if token:
+            return token.decode()
+        else:
+            raise ValueError(ErrorCode.login_error, ErrorMessage.login_error)
+    except Exception as e:
+        current_app.logger.info(e)
+        raise e
+
+
+def login_data_save():
+    try:
+        salesman_data = get_request_data()
+
+        username = salesman_data.get('username')
+        password = salesman_data.get('password')
+
+        check_request_params(username, password)
+        return check_token(username, password)
+    except Exception as e:
+        current_app.logger.info(e)
+        raise e
+
+
+def salesman_register():
+    try:
+        salesman_data = get_request_data()
+
+        username = salesman_data.get('username')
+        password = salesman_data.get('password')
+        name = salesman_data.get('name')
+        job_code = salesman_data.get('job_code')
+
+        check_request_params(username, password, name, job_code)
+        salesman = get_salesman_from_username(username)
+
+        if salesman:
+            raise ValueError(ErrorCode.username_exist, ErrorMessage.username_exist)
+
+        salesman = Salesman(username=username, name=name, job_code=job_code)
+        salesman.set_password = password
+
+        Salesman.add(salesman)
         return True
     except Exception as e:
         current_app.logger.info(e)

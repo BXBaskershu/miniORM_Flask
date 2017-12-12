@@ -1,5 +1,5 @@
 from flask import make_response, jsonify
-from miniCRM.utils.response_code import ErrorCode,ErrorMessage
+from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 
 
 class Response(object):

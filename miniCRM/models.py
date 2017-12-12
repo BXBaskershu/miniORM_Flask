@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from miniCRM.exception import DBCommitException
 from flask import current_app
+from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 
 
 class BaseFunc(object):
@@ -11,8 +12,11 @@ class BaseFunc(object):
         db.session.add(data_obj)
         return session_commit()
 
-    def update(self, *args, **kwargs):
-        return session_commit()
+    def update(self, *args, is_commit=True, **kwargs):
+        if is_commit:
+            return session_commit()
+        else:
+            pass
 
     @classmethod
     def get_from_id(cls, id):
@@ -32,7 +36,6 @@ class Salesman(db.Model, BaseFunc):
     is_incumbency = db.Column(db.SMALLINT, default=1)  # 是否在职, 默认1在职， 0不在职
     created_time = db.Column(db.DateTime, default=datetime.now)
     login_time = db.Column(db.Integer)
-
 
     @property
     def set_password(self):
@@ -138,4 +141,4 @@ def session_commit():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(e)
-        raise DBCommitException()
+        raise DBCommitException(ErrorCode.db_commit_error, ErrorMessage.db_commit_error)

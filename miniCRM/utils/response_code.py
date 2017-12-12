@@ -11,7 +11,10 @@ class ErrorCode(object):
     page_error = '4001'
     request_header_error = '5001'
     false_return = '5002'
+    token_error = '5003'
+    token_due = '5004'
     unknown_error = '6001'
+    db_commit_error = '7001'
 
 
 class ErrorMessage(object):
@@ -27,4 +30,7 @@ class ErrorMessage(object):
     page_error = '页数错误'
     request_header_error = 'JWT验证头错误'
     false_return = 'token有误，请重新获取'
+    token_error = '无效Token'
+    token_due = 'Token过期'
     unknown_error = '未知错误'
+    db_commit_error = '修改数据库失败'

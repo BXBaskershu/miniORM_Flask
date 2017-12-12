@@ -3,6 +3,7 @@ from miniCRM.models import Salesman
 from miniCRM import config
 from miniCRM.libs.response import Response
 from config import Config
+from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 
 
 class Auth(object):
@@ -39,25 +40,10 @@ class Auth(object):
             else:
                 raise jwt.InvalidTokenError
         except jwt.ExpiredSignatureError:
-            return 'Token过期'
+            raise jwt.ExpiredSignatureError(ErrorCode.login_error, ErrorMessage.login_error)
         except jwt.InvalidTokenError:
-            return '无效Token'
+            raise jwt.ExpiredSignatureError(ErrorCode.login_error, ErrorMessage.login_error)
 
-    def authenticate(self, username, password):
-        """登录"""
-        salesman = Salesman.get_from_username(username)
-        salesman_id = salesman.id
-        if salesman is None:
-            return None
-        else:
-            if salesman.check_password(password):
-                login_time = int(time.time())
-                salesman.login_time = login_time
-                salesman.update()
-                token = self.encode_auth_token(salesman_id, login_time)
-                return token
-            else:
-                return None
 
     def identify(self, request):
         """鉴权"""

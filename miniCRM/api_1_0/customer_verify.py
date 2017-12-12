@@ -1,7 +1,4 @@
 from . import api
-from flask import request, jsonify, current_app, g
-from miniCRM.models import Customer, CustomerRecord
-from miniCRM import db
 from miniCRM.libs.response import Response
 from .functions import *
 
