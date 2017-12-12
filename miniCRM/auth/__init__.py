@@ -1,9 +1,9 @@
-import jwt, datetime, time
+import jwt, datetime
 from miniCRM.models import Salesman
 from miniCRM import config
-from miniCRM.libs.response import Response
 from config import Config
 from miniCRM.utils.response_code import ErrorCode, ErrorMessage
+from flask import current_app
 
 
 class Auth(object):
@@ -44,28 +44,25 @@ class Auth(object):
         except jwt.InvalidTokenError:
             raise jwt.ExpiredSignatureError(ErrorCode.login_error, ErrorMessage.login_error)
 
-
     def identify(self, request):
         """鉴权"""
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            auth_tokenArr = auth_header.split(" ")
-            if auth_tokenArr[0] != 'JWT' or len(auth_tokenArr) != 2:
-                result = Response.request_header_error()
-            else:
-                auth_token = auth_tokenArr[1]
-                payload = self.decode_auth_token(auth_token)
-                if not isinstance(payload, str):
-                    salesman = Salesman.get(Salesman, payload['data']['id'])
-                    if salesman is None:
-                        result = Response.not_login()
-                    else:
-                        if (salesman.login_time == payload['data']['login_time']):
-                            result = Response.success_with_data("salesman_id", salesman.salesman_id)
-                        else:
-                            result = Response.false_return()
+        try:
+            auth_header = request.headers.get('Authorization')
+            if auth_header:
+                auth_tokenArr = auth_header.split(" ")
+                if auth_tokenArr[0] != 'JWT' or len(auth_tokenArr) != 2:
+                    raise ValueError(ErrorCode.request_header_error, ErrorMessage.request_header_error)
                 else:
-                    result = Response.false_return()
-        else:
-            result = Response.false_return()
-        return result
+                    auth_token = auth_tokenArr[1]
+                    payload = self.decode_auth_token(auth_token)
+                    if not isinstance(payload, str):
+                        g.salesman_id = Salesman.get(Salesman, payload['data']['id'])
+                        return True
+                    else:
+                        raise ValueError(ErrorCode.not_login, ErrorMessage.not_login)
+            else:
+                raise ValueError(ErrorCode.not_login, ErrorMessage.not_login)
+        except Exception as e:
+            current_app.logger.info(e)
+            raise e
+

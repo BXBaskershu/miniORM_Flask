@@ -182,7 +182,7 @@ def customer_record_save(customer_id):
         raise e
 
 
-def check_token(username, password, *args):
+def return_token(username, password, *args):
     try:
         salesman = get_salesman_from_username(username)
 
@@ -192,7 +192,7 @@ def check_token(username, password, *args):
             salesman.update()
             token = Auth.encode_auth_token(Auth, salesman.id, login_time)
         if token:
-            return token.decode()
+            return salesman.id, token.decode()
         else:
             raise ValueError(ErrorCode.login_error, ErrorMessage.login_error)
     except Exception as e:
@@ -200,7 +200,7 @@ def check_token(username, password, *args):
         raise e
 
 
-def login_data_save():
+def salesman_login():
     try:
         salesman_data = get_request_data()
 
@@ -208,7 +208,12 @@ def login_data_save():
         password = salesman_data.get('password')
 
         check_request_params(username, password)
-        return check_token(username, password)
+        salesman_id, token = return_token(username, password)
+
+        # 存入缓存
+        redis_store.setex('salesman_%s' % salesman_id, constants.CUSTOMER_DETAIL_REDIS_EXPIRE_SECOND,token)
+
+        return token
     except Exception as e:
         current_app.logger.info(e)
         raise e

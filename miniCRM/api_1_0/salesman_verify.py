@@ -9,7 +9,7 @@ from .functions import *
 @api.route('/login', methods=['POST'])
 def login():
     try:
-        token = login_data_save()
+        token = salesman_login()
         if token:
             return Response.success_with_data('data', token)
     except Exception as e:
