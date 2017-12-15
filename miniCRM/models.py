@@ -1,8 +1,9 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
-from miniCRM.exception import DBCommitException, SQLAlchemyError
+from miniCRM.exception import DBCommitException
 from flask import current_app
+from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 
 
 class BaseFunc(object):
@@ -11,8 +12,11 @@ class BaseFunc(object):
         db.session.add(data_obj)
         return session_commit()
 
-    def update(self):
-        return session_commit()
+    def update(self, *args, is_commit=True, **kwargs):
+        if is_commit:
+            return session_commit()
+        else:
+            pass
 
     @classmethod
     def get_from_id(cls, id):
@@ -32,7 +36,6 @@ class Salesman(db.Model, BaseFunc):
     is_incumbency = db.Column(db.SMALLINT, default=1)  # 是否在职, 默认1在职， 0不在职
     created_time = db.Column(db.DateTime, default=datetime.now)
     login_time = db.Column(db.Integer)
-
 
     @property
     def set_password(self):
@@ -61,13 +64,6 @@ class Salesman(db.Model, BaseFunc):
     def get_from_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
-    @classmethod
-    def get_all(cls):
-        return cls.query.order_by(cls.created_time.desc())
-
-    @classmethod
-    def get_one_all(cls, salesman_id):
-        return cls.query.filter_by(salesman_id=salesman_id).order_by(cls.created_time.desc())
 
 
 class Customer(db.Model, BaseFunc):
@@ -106,8 +102,12 @@ class Customer(db.Model, BaseFunc):
         return cls.query.filter_by(telephone=telephone).first()
 
     @classmethod
-    def customer_all(cls):
+    def get_all(cls):
         return cls.query.order_by(cls.created_time.desc())
+
+    @classmethod
+    def get_one_all(cls, salesman_id):
+        return cls.query.filter_by(salesman_id=salesman_id).order_by(cls.created_time.desc())
 
 
 class CustomerRecord(db.Model, BaseFunc):
@@ -121,7 +121,6 @@ class CustomerRecord(db.Model, BaseFunc):
     content = db.Column(db.String(200), nullable=False)  # 跟进记录
     created_time = db.Column(db.DateTime, default=datetime.now)
 
-    @property
     def to_dict(self):
         """将对象转换为字典数据"""
         customer_record_dict = {
@@ -139,7 +138,7 @@ class CustomerRecord(db.Model, BaseFunc):
 def session_commit():
     try:
         db.session.commit()
-    except SQLAlchemyError as e:
+    except Exception as e:
         db.session.rollback()
         current_app.logger.error(e)
-        raise SQLAlchemyError
+        raise DBCommitException(ErrorCode.db_commit_error, ErrorMessage.db_commit_error)

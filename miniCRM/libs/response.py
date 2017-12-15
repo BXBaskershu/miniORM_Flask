@@ -1,5 +1,5 @@
 from flask import make_response, jsonify
-from miniCRM.utils.response_code import ErrorCode,ErrorMessage
+from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 
 
 class Response(object):
@@ -10,10 +10,9 @@ class Response(object):
         return resp
 
     @staticmethod
-    def error(error_code,  errmsg, desc=''):
+    def error(errmsg, desc=''):
         content = {
-            'status': 000,
-            'error_code': error_code,
+            'status': 0,
             'msg': errmsg,
             'desc': desc
         }
@@ -41,43 +40,3 @@ class Response(object):
     @staticmethod
     def permission_denied():
         return Response.error(ErrorCode.permission_denied, ErrorMessage.permission_denied)
-
-    @staticmethod
-    def params_error():
-        return Response.error(ErrorCode.params_error, ErrorMessage.params_error)
-
-    @staticmethod
-    def params_lose(*args):
-        return Response.error(ErrorCode.params_lose, '{}:{}'.format(ErrorMessage.params_lose, *args))
-
-    @staticmethod
-    def not_login():
-        return Response.error(ErrorCode.not_login, ErrorMessage.not_login)
-
-    @staticmethod
-    def login_error():
-        return Response.error(ErrorCode.login_error, ErrorMessage.login_error)
-
-    @staticmethod
-    def username_exist():
-        return Response.error(ErrorCode.username_exist, ErrorMessage.username_exist)
-
-    @staticmethod
-    def customer_exist():
-        return Response.error(ErrorCode.customer_exist, ErrorMessage.customer_exist)
-
-    @staticmethod
-    def page_error():
-        return Response.error(ErrorCode.page_error, ErrorMessage.page_error)
-
-    @staticmethod
-    def customer_not_exist():
-        return Response.error(ErrorCode.customer_not_exist, ErrorMessage.customer_not_exist)
-
-    @staticmethod
-    def request_header_error():
-        return Response.error(ErrorCode.request_header_error, ErrorMessage.request_header_error)
-
-    @staticmethod
-    def false_return():
-        return Response.error(ErrorCode.false_return, ErrorMessage.false_return)

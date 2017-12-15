@@ -7,9 +7,14 @@ class ErrorCode(object):
     username_exist = '3001'
     customer_exist = '3002'
     customer_not_exist = '3003'
+    salesman_not_exist = '3004'
     page_error = '4001'
     request_header_error = '5001'
     false_return = '5002'
+    token_error = '5003'
+    token_due = '5004'
+    unknown_error = '6001'
+    db_commit_error = '7001'
 
 
 class ErrorMessage(object):
@@ -21,6 +26,11 @@ class ErrorMessage(object):
     username_exist = '用户名已存在'
     customer_exist = '客户已存在'
     customer_not_exist = '客户不存在'
+    salesman_not_exist = '销售人员不存在'
     page_error = '页数错误'
     request_header_error = 'JWT验证头错误'
     false_return = 'token有误，请重新获取'
+    token_error = '无效Token'
+    token_due = 'Token过期'
+    unknown_error = '未知错误'
+    db_commit_error = '修改数据库失败'
