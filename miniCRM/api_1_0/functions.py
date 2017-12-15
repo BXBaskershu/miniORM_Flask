@@ -1,7 +1,7 @@
 from miniCRM.utils.response_code import ErrorCode, ErrorMessage
 from miniCRM.models import Customer, CustomerRecord, Salesman
 from miniCRM.utils.commons import page_str_to_int, paging
-from flask import request, current_app
+from flask import request, current_app, session
 from miniCRM import redis_store, constants
 import json
 import time
@@ -130,8 +130,7 @@ def customer_data_save():
         name = customer_data.get('name')
         telephone = customer_data.get('telephone')
         detail = customer_data.get('detail')
-        # salesman_id = g.salesman_id
-        salesman_id = 1
+        salesman_id = g.salesman_id
 
         check_request_params(name, telephone, detail, salesman_id)
         get_customer_obj_by_telephone(telephone)
@@ -211,8 +210,8 @@ def salesman_login():
         salesman_id, token = return_token(username, password)
 
         # 存入缓存
-        redis_store.setex('salesman_%s' % salesman_id, constants.CUSTOMER_DETAIL_REDIS_EXPIRE_SECOND,token)
-
+        redis_store.setex('salesman_%s' % salesman_id, constants.CUSTOMER_DETAIL_REDIS_EXPIRE_SECOND, token)
+        session['id'] = salesman_id
         return token
     except Exception as e:
         current_app.logger.info(e)

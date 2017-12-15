@@ -1,8 +1,8 @@
 import functools
-from flask import g, session, request, current_app, abort
+from flask import g, session, request, current_app
 from werkzeug.routing import BaseConverter
 from miniCRM.utils.response_code import ErrorCode, ErrorMessage
-
+from miniCRM.libs.response import Response
 
 
 class RegexConverter(BaseConverter):

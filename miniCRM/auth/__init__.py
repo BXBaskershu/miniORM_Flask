@@ -3,7 +3,7 @@ from miniCRM.models import Salesman
 from miniCRM import config
 from config import Config
 from miniCRM.utils.response_code import ErrorCode, ErrorMessage
-from flask import current_app
+from flask import current_app, g
 
 
 class Auth(object):
@@ -55,13 +55,12 @@ class Auth(object):
                 else:
                     auth_token = auth_tokenArr[1]
                     payload = self.decode_auth_token(auth_token)
-                    if not isinstance(payload, str):
-                        g.salesman_id = Salesman.get(Salesman, payload['data']['id'])
+                    if g.salesman_id == payload['data']['id']:
                         return True
                     else:
-                        raise ValueError(ErrorCode.not_login, ErrorMessage.not_login)
+                        raise ValueError(ErrorCode.login_error, ErrorMessage.login_error)
             else:
-                raise ValueError(ErrorCode.not_login, ErrorMessage.not_login)
+                raise ValueError(ErrorCode.login_error, ErrorMessage.login_error)
         except Exception as e:
             current_app.logger.info(e)
             raise e
